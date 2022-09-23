@@ -8,13 +8,13 @@ janela.set_title("Pong_Lab")
 
 teclado = Window.get_keyboard()
 
-b1x = 100
-b1y = 100
+b1x = 200
+b1y = 200
 
 b2x = 0
 b2y = 0
 
-velp = 100
+velp = 180
 
 pont1 = 0
 pont2 = 0
@@ -51,18 +51,29 @@ while 1:
     # Verifica o estado das bolinhas
     if hideb1 and hideb2:
         hideb1 = False
-        hideb2 = False
         contb = 0
-        b1x = 100
-        b1y = 100
-        b2x = -100
-        b2y = -100
+        b1x = 200
+        b1y = 200
+        b2x = 0
+        b2y = 0
 
-    if contb == 3:
-        hideb2 = False
-        b2x = -100
-        b2y = -100
-        contb += 1
+    # IA
+
+    if bola1.x >= janela.width/2 and bola1.y <= pad2.y + pad2.height and b1x > 0:
+        pad2.y -= velp * janela.delta_time()
+    if bola1.x >= janela.width/2 and bola1.y >= pad2.y and b1x > 0:
+        pad2.y += velp * janela.delta_time()
+
+    if not hideb2:
+        if bola2.x >= janela.width/2 and bola2.y <= pad2.y and b2x > 0:
+            pad2.y -= velp * janela.delta_time()
+        if bola2.x >= janela.width/2 and bola2.y >= pad2.y + pad2.height and b2x > 0:
+            pad2.y += velp * janela.delta_time()
+
+    if bola1.x < janela.width/2 and bola2.x < janela.width/2 and pad2.y > janela.height/2 - pad2.height/2:
+        pad2.y -= velp * janela.delta_time()
+    if bola1.x < janela.width/2 and bola2.x < janela.width/2 and pad2.y < janela.height/2 - pad2.height/2:
+        pad2.y += velp * janela.delta_time()
 
     # Movimento pad
     if pad1.y < 0:
@@ -78,23 +89,22 @@ while 1:
         pad1.y -= velp * janela.delta_time()
     if teclado.key_pressed("s"):
         pad1.y += velp * janela.delta_time()
-    if teclado.key_pressed("UP"):
-        pad2.y -= velp * janela.delta_time()
-    if teclado.key_pressed("DOWN"):
-        pad2.y += velp * janela.delta_time()
+
 
     #Colisão pad/bola
 
     if bola1.collided(pad1) and b1x < 0:
         b1x = -b1x
-        contb += 1
+        if contb < 3:
+            contb += 1
     if bola1.collided(pad2) and b1x > 0:
         b1x = -b1x
-        contb += 1
+        if contb < 3:
+            contb += 1
 
-    if bola2.collided(pad1) and b1x < 0:
+    if bola2.collided(pad1) and b2x < 0:
         b2x = -b2x
-    if bola2.collided(pad2) and b1x > 0:
+    if bola2.collided(pad2) and b2x > 0:
         b2x = -b2x
 
     # Movimento bola
@@ -148,6 +158,13 @@ while 1:
 
     bola2.x += b2x * janela.delta_time()
     bola2.y += b2y * janela.delta_time()
+
+    # Spawna a 2 bolinha
+    if contb == 3:
+        hideb2 = False
+        b2x = 200
+        b2y = 200
+        contb += 1
 
     # Imprime na tela
 
